@@ -32,18 +32,34 @@ class PlayField;
 class GameObject
 {
 public:
+	unsigned IDGameObject;
 	char* m_objType = nullptr;
 	Vector2D pos;
 	unsigned char sprite;
 
+	unsigned GetID() { return IDGameObject;  }
 	virtual void Update(PlayField& world) {};
 	bool DecreaseHealth() { return true; };
+
+	std::vector<GameObject*> GetAnyObjects(const std::vector<GameObject*> gameObjects,std::string tag, GameObject& checkObject) {
+		std::vector<GameObject*> allMatchBytag;
+		for (GameObject* go : gameObjects) {
+			if (go != &checkObject) {
+				if (strcmp(go->m_objType, tag.c_str()) == 0) {
+					allMatchBytag.push_back(go);
+				}
+			}
+		}
+		return allMatchBytag;
+	}
+
 };
 
 class PlayField
 {
 private:
-	std::vector<GameObject*> gameObjects;
+	std::vector<GameObject*> gameObjectsToSpawn;
+	std::vector<GameObject*> gameObjectsToDelete;
 
 public:
 	Input* cotrollerInput;
@@ -54,14 +70,19 @@ public:
 	int PlayerLasers = 4;
 
 	PlayField(Vector2D iBounds) : bounds(iBounds) { cotrollerInput = new RndInput(); }; //Init cotrollerInput
-	const std::vector<GameObject*> GameObjects() { return gameObjects; }
+	const std::vector<GameObject*> GameObjects() { return gameObjectsToSpawn; }
+	const std::vector<GameObject*> GameObjectsToDelete() { return gameObjectsToDelete; }
 
 	//Remove all pointer in memorie 
 	void RemoveAllGameObject() {
-		for (GameObject* gameObject : gameObjects) {
-			delete gameObject;
+		for (GameObject* objectToDelete : gameObjectsToDelete) {
+			if (objectToDelete) {
+				gameObjectsToSpawn.erase(std::find(gameObjectsToSpawn.begin(), gameObjectsToSpawn.end(), objectToDelete)); //Retire l'objet a supprimer
+				delete objectToDelete; //delete le pointer 
+				objectToDelete = nullptr;
+			}
 		} 
-		gameObjects.clear();
+		gameObjectsToDelete.clear();
 	}
 
 	void Update()
@@ -76,12 +97,14 @@ public:
 	GameObject* GetPlayerObject()
 	{
 		//Change playerShip -> PlayerShip
-		auto it = std::find_if(gameObjects.begin(), gameObjects.end(), [](GameObject* in) { return (strcmp(in->m_objType, "PlayerShip") == 0); });
-		if (it != gameObjects.end())
+		auto it = std::find_if(gameObjectsToSpawn.begin(), gameObjectsToSpawn.end(), [](GameObject* in) { return (strcmp(in->m_objType, "PlayerShip") == 0); });
+		if (it != gameObjectsToSpawn.end())
 			return (*it);
 		else
 			return nullptr;
 	}
+
+	
 
 	void SpawnLaser(GameObject* newObj)
 	{
@@ -112,7 +135,7 @@ public:
 
 	void AddObject(GameObject* newObj)
 	{
-		gameObjects.push_back(newObj);
+		gameObjectsToSpawn.push_back(newObj);
 	}
 
 	void RemoveObject(GameObject* newObj)
@@ -121,28 +144,28 @@ public:
 		if (!newObj) return;
 
 		//Change find_if -> find
-		auto it = std::find(gameObjects.begin(), gameObjects.end(), newObj);
-		delete newObj;
-		gameObjects.erase(it);
+		auto it = std::find(gameObjectsToSpawn.begin(), gameObjectsToSpawn.end(), newObj);
+		gameObjectsToDelete.push_back(newObj);
 	}
 };
 
 class AlienLaser : public GameObject
 {
 public:
-	AlienLaser() { m_objType = new char[64]; strcpy(m_objType, "AlienLaser"); sprite = RS_AlienLaser; }
+	AlienLaser() { m_objType = new char[64]; strcpy(m_objType, "AlienLaser"); sprite = RS_AlienLaser; IDGameObject = std::rand(); }
 	~AlienLaser() { delete[] m_objType; }
 
 	void Update(PlayField& world)
 	{
+		
 		bool deleted = false;
 		pos.y += 1.f;
 		if (pos.y > world.bounds.y)
 		{
 			deleted = true;
 		}
-
-		GameObject* player = world.GetPlayerObject();
+		
+		/*GameObject* player = world.GetPlayerObject();
 		if (!player) return; //Check si on récupère le personnage
 		if (pos.IntCmp(player->pos))
 		{
@@ -150,6 +173,14 @@ public:
 			world.DespawnLaser(this); //Remove lorsque le laser a toucher le joueur
 			StartGame = false; //Stop la partie qd le joueur est mort
 		}
+
+		std::vector<GameObject*> laserGameObjects = GetAnyObjects(world.GameObjects(), "AlienLaser", *this);
+		for (GameObject* otherLaser : laserGameObjects) {
+			if (pos.IntCmp(otherLaser->pos)) {
+				deleted = true;
+			}
+		}*/
+
 
 		if (deleted)
 		{
@@ -161,7 +192,7 @@ public:
 class PlayerLaser : public GameObject
 {
 public:
-	PlayerLaser() { m_objType = new char[64]; strcpy(m_objType, "PlayerLaser"); sprite = RS_PlayerLaser; }
+	PlayerLaser() { m_objType = new char[64]; strcpy(m_objType, "PlayerLaser"); sprite = RS_PlayerLaser; IDGameObject = std::rand(); }
 	~PlayerLaser() { delete[] m_objType; }
 
 	void Update(PlayField& world)
@@ -171,6 +202,23 @@ public:
 		if (pos.y < 0)
 		{
 			deleted = true;
+		}
+
+		//Ajoute le laser toucher dans la liste des objets a supprimer
+		std::vector<GameObject*> laserGameObjects = GetAnyObjects(world.GameObjects(), "AlienLaser", *this);
+		for (GameObject* otherLaser : laserGameObjects) {
+			if (pos.IntCmp(otherLaser->pos)) {
+				world.RemoveObject(otherLaser);
+				deleted = true;
+			}
+		}
+
+		std::vector<GameObject*> alienGameObjects = GetAnyObjects(world.GameObjects(), "AlienShip", *this);
+		for (GameObject* otherLaser : alienGameObjects) {
+			if (pos.IntCmp(otherLaser->pos)) {
+				world.RemoveObject(otherLaser);
+				deleted = true;
+			}
 		}
 
 		if (deleted)
@@ -184,7 +232,7 @@ public:
 class Alien : public GameObject
 {
 public:
-	Alien() { m_objType = new char[64]; strcpy(m_objType, "AlienShip"); sprite = RS_Alien; }
+	Alien() { m_objType = new char[64]; strcpy(m_objType, "AlienShip"); sprite = RS_Alien; IDGameObject = std::rand(); }
 	~Alien() { delete[] m_objType; } //delete array
 
 private:
@@ -233,7 +281,7 @@ private:
 class PlayerShip : public GameObject
 {
 public:
-	PlayerShip() { m_objType = new char[64]; strcpy(m_objType, "PlayerShip"); sprite = RS_Player; }
+	PlayerShip() { m_objType = new char[64]; strcpy(m_objType, "PlayerShip"); sprite = RS_Player; IDGameObject = std::rand(); }
 	~PlayerShip() { delete[] m_objType; } //delete array
 
 	void Update(PlayField& world)
@@ -292,6 +340,7 @@ int main()
 		}
 
 		consoleRenderer.Update(rl);
+		world.RemoveAllGameObject();
 
 		// Sleep a bit so updates don't run too fast
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
