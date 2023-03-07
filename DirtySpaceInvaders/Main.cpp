@@ -4,12 +4,31 @@
 #include <thread>
 #include <memory>
 #include <string>
+#include <conio.h>
+#include <iostream>
 
 std::default_random_engine rGen;
 typedef std::uniform_int_distribution<int> intRand;
 typedef std::uniform_real_distribution<float> floatRand;
 
 bool StartGame = false;
+
+class InputEvent {
+	
+public:
+	InputEvent() {
+		type = InputEvent::EventType::None;
+	}
+
+	enum EventType
+	{
+		None,
+		Close,
+		KeyPressed
+	};
+
+	EventType type;
+};
 
 class Input
 {
@@ -73,6 +92,25 @@ public:
 	const std::vector<GameObject*> GameObjects() { return gameObjectsToSpawn; }
 	const std::vector<GameObject*> GameObjectsToDelete() { return gameObjectsToDelete; }
 
+	std::vector<InputEvent*> poolEvents;
+
+	bool PollEvent(InputEvent& inputEvent) {
+
+		if (poolEvents.size() > 0) inputEvent = *poolEvents.at(0);
+		if (inputEvent.type == InputEvent::None || poolEvents.size() <= 0) {
+			inputEvent.type == InputEvent::None;
+			return false;
+		}
+
+		poolEvents.erase(poolEvents.begin());
+
+		return true;
+	}
+
+	void AddEvent(InputEvent* inputEvent) {
+		poolEvents.push_back(inputEvent);
+	}
+
 	//Remove all pointer in memorie 
 	void RemoveAllGameObject() {
 		for (GameObject* objectToDelete : gameObjectsToDelete) {
@@ -83,6 +121,23 @@ public:
 			}
 		} 
 		gameObjectsToDelete.clear();
+	}
+
+	void ClearGame() {
+		RemoveAllGameObject();
+		for (GameObject* clearObject : gameObjectsToSpawn) {
+			if (clearObject) {
+				delete clearObject;
+			}
+		}
+		gameObjectsToSpawn.clear();
+
+		for (InputEvent* inputs : poolEvents) {
+			if (inputs) {
+				delete inputs;
+			}
+		}
+		poolEvents.clear();
 	}
 
 	void Update()
@@ -286,10 +341,20 @@ public:
 
 	void Update(PlayField& world)
 	{
-		if (world.cotrollerInput->Left())
+
+		if (world.cotrollerInput->Left()) {
+			InputEvent* inputEvent = new InputEvent();
+			inputEvent->type = InputEvent::KeyPressed;
+			world.AddEvent(inputEvent);
 			pos.x -= 1;
-		else if (world.cotrollerInput->Right())
+
+			InputEvent* inputEvent2 = new InputEvent();
+			inputEvent2->type = InputEvent::Close;
+			world.AddEvent(inputEvent2);
+		}
+		else if (world.cotrollerInput->Right()) {
 			pos.x += 1;
+		}
 
 		if (world.cotrollerInput->Fire() && world.PlayerLasers > 0)
 		{
@@ -330,6 +395,18 @@ int main()
 
 	while (StartGame) //Le jeu tourne tant que la variable est egal a true
 	{
+
+		InputEvent Event;
+		while (world.PollEvent(Event))
+		{
+			if (Event.type == InputEvent::Close)
+				StartGame = false;
+
+			if (Event.type == InputEvent::KeyPressed) {
+				std::cout << " Key pressed" << "\n";
+			}
+		}
+
 		world.Update();
 
 		RenderItemList rl;
@@ -346,5 +423,5 @@ int main()
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 
-	world.RemoveAllGameObject();
+	world.ClearGame();
 }
