@@ -6,6 +6,8 @@
 #include <string>
 #include <conio.h>
 #include <iostream>
+#include <functional>
+#include <thread>
 
 std::default_random_engine rGen;
 typedef std::uniform_int_distribution<int> intRand;
@@ -14,7 +16,7 @@ typedef std::uniform_real_distribution<float> floatRand;
 bool StartGame = false;
 
 class InputEvent {
-	
+
 public:
 	InputEvent() {
 		type = InputEvent::EventType::None;
@@ -28,6 +30,13 @@ public:
 	};
 
 	EventType type;
+	char key;
+
+	template<typename T>
+	void BindInput(T* ctx, void(T::*callback)(float), float value) {
+		auto call = std::bind(callback, ctx, std::placeholders::_1);
+		call(value);
+	}
 };
 
 class Input
@@ -220,7 +229,7 @@ public:
 			deleted = true;
 		}
 		
-		/*GameObject* player = world.GetPlayerObject();
+		GameObject* player = world.GetPlayerObject();
 		if (!player) return; //Check si on récupère le personnage
 		if (pos.IntCmp(player->pos))
 		{
@@ -228,14 +237,6 @@ public:
 			world.DespawnLaser(this); //Remove lorsque le laser a toucher le joueur
 			StartGame = false; //Stop la partie qd le joueur est mort
 		}
-
-		std::vector<GameObject*> laserGameObjects = GetAnyObjects(world.GameObjects(), "AlienLaser", *this);
-		for (GameObject* otherLaser : laserGameObjects) {
-			if (pos.IntCmp(otherLaser->pos)) {
-				deleted = true;
-			}
-		}*/
-
 
 		if (deleted)
 		{
@@ -341,19 +342,28 @@ public:
 
 	void Update(PlayField& world)
 	{
+		char ch;
 
-		if (world.cotrollerInput->Left()) {
-			InputEvent* inputEvent = new InputEvent();
-			inputEvent->type = InputEvent::KeyPressed;
-			world.AddEvent(inputEvent);
-			pos.x -= 1;
+		if (_kbhit()) {
+			//program pauses here until key is pressed
+			ch = _getch();
 
-			InputEvent* inputEvent2 = new InputEvent();
-			inputEvent2->type = InputEvent::Close;
-			world.AddEvent(inputEvent2);
-		}
-		else if (world.cotrollerInput->Right()) {
-			pos.x += 1;
+			if (ch == 'q') {
+				if (pos.x > 0) {
+					InputEvent* inputEvent = new InputEvent();
+					inputEvent->type = InputEvent::KeyPressed;
+					inputEvent->BindInput(this, &PlayerShip::Move, -1);
+					world.AddEvent(inputEvent);
+				}
+			}
+			else if(ch == 'd') {
+				if (pos.x < world.bounds.x -1 ) {
+					InputEvent* inputEvent = new InputEvent();
+					inputEvent->type = InputEvent::KeyPressed;
+					inputEvent->BindInput(this, &PlayerShip::Move, 1);
+					world.AddEvent(inputEvent);
+				}
+			}
 		}
 
 		if (world.cotrollerInput->Fire() && world.PlayerLasers > 0)
@@ -363,6 +373,10 @@ public:
 			newLaser->pos = pos;
 			world.SpawnLaser(newLaser);
 		}
+	}
+
+	void Move(float axisValue) {
+		pos.x += axisValue;
 	}
 };
 
@@ -395,6 +409,7 @@ int main()
 
 	while (StartGame) //Le jeu tourne tant que la variable est egal a true
 	{
+		world.Update();
 
 		InputEvent Event;
 		while (world.PollEvent(Event))
@@ -407,8 +422,6 @@ int main()
 			}
 		}
 
-		world.Update();
-
 		RenderItemList rl;
 		for (auto it : world.GameObjects())
 		{
@@ -420,7 +433,7 @@ int main()
 		world.RemoveAllGameObject();
 
 		// Sleep a bit so updates don't run too fast
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 	}
 
 	world.ClearGame();
