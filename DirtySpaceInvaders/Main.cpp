@@ -122,7 +122,7 @@ public:
 
 	//Remove all pointer in memorie 
 	void RemoveAllGameObject() {
-		for (GameObject* objectToDelete : gameObjectsToDelete) {
+		for (GameObject* objectToDelete : GameObjectsToDelete()) {
 			if (objectToDelete) {
 				gameObjectsToSpawn.erase(std::find(gameObjectsToSpawn.begin(), gameObjectsToSpawn.end(), objectToDelete)); //Retire l'objet a supprimer
 				delete objectToDelete; //delete le pointer 
@@ -363,6 +363,11 @@ public:
 					inputEvent->BindInput(this, &PlayerShip::Move, 1);
 					world.AddEvent(inputEvent);
 				}
+			}
+			else if (ch == 'w') {
+				InputEvent* inputEvent = new InputEvent();
+				inputEvent->type = InputEvent::Close;
+				world.AddEvent(inputEvent);
 			}
 		}
 
