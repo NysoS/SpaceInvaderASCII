@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include <Engine/Input/InputController.h>
 #include <random>
 
 GameObject::GameObject() : IDGameObject(std::rand()), pos(Vector2D(0,0)), sprite(' ')
@@ -17,7 +18,9 @@ unsigned GameObject::GetID() const{
 }
 
 void GameObject::Update(PlayField& _world)
-{}
+{
+	
+}
 
 
 std::string GameObject::GetName() const
@@ -54,6 +57,22 @@ unsigned char GameObject::GetSprite() const
 void GameObject::SetSprite(unsigned char _sprite)
 {
 	sprite = _sprite;
+}
+
+void GameObject::Start()
+{
+}
+
+void GameObject::SetInputController()
+{
+	if (!PlayerInputController) {
+		PlayerInputController = new InputController();
+	}
+}
+
+InputController* GameObject::GetInputController()
+{
+	return PlayerInputController!=nullptr?PlayerInputController:nullptr;
 }
 
 void GameObject::SetPos(float _posX, float _posY)

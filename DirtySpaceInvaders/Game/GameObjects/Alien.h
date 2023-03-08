@@ -14,6 +14,7 @@ public:
 	Alien(std::string _name);
 	~Alien();
 
+	void Start() override;
 	void Update(PlayField& world) override;
 	bool DecreaseHealth() override;
 };

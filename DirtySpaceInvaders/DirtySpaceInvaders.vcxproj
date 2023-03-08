@@ -114,15 +114,17 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SFML_STATIC;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\include\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics-s-d.lib;sfml-window-s-d.lib;sfml-system-s-d.lib;opengl32.lib;freetype.lib;gdi32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -148,7 +150,11 @@
     <ClInclude Include="Engine\Gameplay\GameObjects\GameObject.h" />
     <ClInclude Include="Engine\Gameplay\World\PlayField.h" />
     <ClInclude Include="Engine\Input\Input.h" />
+    <ClInclude Include="Engine\Input\InputAction.h" />
+    <ClInclude Include="Engine\Input\InputController.h" />
     <ClInclude Include="Engine\Input\InputEvent.h" />
+    <ClInclude Include="Engine\Input\InputManager.h" />
+    <ClInclude Include="Engine\Input\KeyboardDefaultBinding.h" />
     <ClInclude Include="Engine\Mathf\Vector.h" />
     <ClInclude Include="Game\GameObjects\Alien.h" />
     <ClInclude Include="Game\GameObjects\AlienLaser.h" />
@@ -161,7 +167,9 @@
     <ClCompile Include="Engine\Gameplay\GameObjects\GameObject.cpp" />
     <ClCompile Include="Engine\Gameplay\World\PlayField.cpp" />
     <ClCompile Include="Engine\Input\Input.cpp" />
+    <ClCompile Include="Engine\Input\InputController.cpp" />
     <ClCompile Include="Engine\Input\InputEvent.cpp" />
+    <ClCompile Include="Engine\Input\InputManager.cpp" />
     <ClCompile Include="Game\GameObjects\Alien.cpp" />
     <ClCompile Include="Game\GameObjects\AlienLaser.cpp" />
     <ClCompile Include="Game\GameObjects\PlayerLaser.cpp" />

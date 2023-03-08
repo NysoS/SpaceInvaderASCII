@@ -27,6 +27,7 @@ public:
 	const std::vector<GameObject*> GameObjects();
 	const std::vector<GameObject*> GameObjectsToDelete();
 
+	void Start();
 	void Update();
 	
 	GameObject* GetPlayerObject();

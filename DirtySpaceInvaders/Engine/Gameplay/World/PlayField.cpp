@@ -20,6 +20,14 @@ const std::vector<GameObject*> PlayField::GameObjectsToDelete()
 	return gameObjectsToDelete;
 }
 
+void PlayField::Start()
+{
+	for (auto it : GameObjects()) //Change gameObjects to GameOject const
+	{
+		it->Start();
+	}
+}
+
 void PlayField::Update()
 {
 	// Update list of active objects in the world
@@ -85,15 +93,15 @@ void PlayField::RemoveObject(GameObject* _newObj)
 
 bool PlayField::PollEvent(InputEvent& _inputEvent)
 {
-	if (poolEvents.size() > 0) _inputEvent = *poolEvents.at(0);
+	/*if (poolEvents.size() > 0) _inputEvent = *poolEvents.at(0);
 	if (_inputEvent.Type == InputEvent::None || poolEvents.size() <= 0) {
 		_inputEvent.Type == InputEvent::None;
 		return false;
 	}
 
 	poolEvents.erase(poolEvents.begin());
-
-	return true;
+	*/
+	return false;
 }
 
 void PlayField::AddEvent(InputEvent* _inputEvent)
@@ -122,10 +130,4 @@ void PlayField::ClearGame() {
 	}
 	gameObjectsToSpawn.clear();
 
-	for (InputEvent* inputs : poolEvents) {
-		if (inputs) {
-			delete inputs;
-		}
-	}
-	poolEvents.clear();
 }

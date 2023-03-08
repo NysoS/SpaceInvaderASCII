@@ -20,7 +20,11 @@ Alien::~Alien()
 {
 }
 
-void Alien::Update(PlayField& _world) 
+void Alien::Start()
+{
+}
+
+void Alien::Update(PlayField& _world)
 {
 	pos.x += direction * velocity;
 	// Border check
