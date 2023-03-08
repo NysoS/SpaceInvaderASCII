@@ -116,6 +116,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,10 +143,29 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleRenderer.h" />
-    <ClInclude Include="Vector.h" />
+    <ClInclude Include="Engine\Gameplay\Components\ComponentInterface.h" />
+    <ClInclude Include="Engine\Gameplay\Components\Transform\Transform.h" />
+    <ClInclude Include="Engine\Gameplay\GameObjects\GameObject.h" />
+    <ClInclude Include="Engine\Gameplay\World\PlayField.h" />
+    <ClInclude Include="Engine\Input\Input.h" />
+    <ClInclude Include="Engine\Input\InputEvent.h" />
+    <ClInclude Include="Engine\Mathf\Vector.h" />
+    <ClInclude Include="Game\GameObjects\Alien.h" />
+    <ClInclude Include="Game\GameObjects\AlienLaser.h" />
+    <ClInclude Include="Game\GameObjects\PlayerLaser.h" />
+    <ClInclude Include="Game\GameObjects\PlayerShip.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConsoleRenderer.cpp" />
+    <ClCompile Include="Engine\Gameplay\Components\ComponentInterface.cpp" />
+    <ClCompile Include="Engine\Gameplay\GameObjects\GameObject.cpp" />
+    <ClCompile Include="Engine\Gameplay\World\PlayField.cpp" />
+    <ClCompile Include="Engine\Input\Input.cpp" />
+    <ClCompile Include="Engine\Input\InputEvent.cpp" />
+    <ClCompile Include="Game\GameObjects\Alien.cpp" />
+    <ClCompile Include="Game\GameObjects\AlienLaser.cpp" />
+    <ClCompile Include="Game\GameObjects\PlayerLaser.cpp" />
+    <ClCompile Include="Game\GameObjects\PlayerShip.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

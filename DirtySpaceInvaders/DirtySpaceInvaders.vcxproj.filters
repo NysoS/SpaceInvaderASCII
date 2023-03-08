@@ -13,13 +13,100 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{e546a00d-07f8-4f22-b4fb-543e482dd1e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Gameplay">
+      <UniqueIdentifier>{364e479f-980e-48ac-af15-81f240ab66f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Gameplay\GameObjects">
+      <UniqueIdentifier>{93d1672f-c25d-4fb4-8e05-e6a4b8613a6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Input">
+      <UniqueIdentifier>{202f9b6b-e39c-4811-8ef9-7e5f84fd416e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Render">
+      <UniqueIdentifier>{561d185e-d068-4392-9155-219f890f6f2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Gameplay\Components">
+      <UniqueIdentifier>{3df10611-79c7-4b0e-8327-d97422296690}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Gameplay\Components\Transform">
+      <UniqueIdentifier>{adf5183a-2807-4f07-8019-f2ee6b0e27eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{6b315e0e-2bb4-40f9-816e-710af3e7a82a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Gameplay">
+      <UniqueIdentifier>{582b8c5b-6b0e-4dfe-8652-ec3c38f163cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Gameplay\Components">
+      <UniqueIdentifier>{adf7d759-484c-46ae-8df5-5fdbec042bbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Mathf">
+      <UniqueIdentifier>{793bba78-4592-4c67-8672-796cdbf9bcbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Gameplay\GameObjects">
+      <UniqueIdentifier>{6d99c9d5-49b9-459e-aa62-c6321cd49b93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game">
+      <UniqueIdentifier>{83ebe16c-8198-4fb5-9485-7ec29839ef9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\GameObjects">
+      <UniqueIdentifier>{3c78bcd0-96df-4193-aa2b-a95ec4284a27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{43388c56-6566-47ed-8a6b-f8e829d8b3b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\GameObjects">
+      <UniqueIdentifier>{1bba66d6-11ab-4714-b7df-7f123f4bddae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Gameplay\World">
+      <UniqueIdentifier>{b4cb35ea-5b5c-4d8d-b02d-9b151a1bf5e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Gameplay\World">
+      <UniqueIdentifier>{dfaaf445-616a-45cb-ae9b-cad78d5d2eb4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Input">
+      <UniqueIdentifier>{a873730f-e208-41cf-9d20-7fa639e82812}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vector.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Engine\Gameplay\Components\ComponentInterface.h">
+      <Filter>Header Files\Engine\Gameplay\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Gameplay\Components\Transform\Transform.h">
+      <Filter>Header Files\Engine\Gameplay\Components\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Mathf\Vector.h">
+      <Filter>Header Files\Engine\Mathf</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Gameplay\GameObjects\GameObject.h">
+      <Filter>Header Files\Engine\Gameplay\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\GameObjects\Alien.h">
+      <Filter>Header Files\Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Gameplay\World\PlayField.h">
+      <Filter>Header Files\Engine\Gameplay\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\GameObjects\PlayerShip.h">
+      <Filter>Header Files\Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Input\Input.h">
+      <Filter>Header Files\Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Input\InputEvent.h">
+      <Filter>Header Files\Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\GameObjects\PlayerLaser.h">
+      <Filter>Header Files\Game\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\GameObjects\AlienLaser.h">
+      <Filter>Header Files\Game\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -28,6 +115,33 @@
     </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Gameplay\Components\ComponentInterface.cpp">
+      <Filter>Source Files\Engine\Gameplay\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Gameplay\GameObjects\GameObject.cpp">
+      <Filter>Source Files\Engine\Gameplay\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\GameObjects\Alien.cpp">
+      <Filter>Source Files\Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Gameplay\World\PlayField.cpp">
+      <Filter>Source Files\Engine\Gameplay\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\GameObjects\PlayerShip.cpp">
+      <Filter>Source Files\Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Input\Input.cpp">
+      <Filter>Source Files\Engine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Input\InputEvent.cpp">
+      <Filter>Source Files\Engine\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\GameObjects\PlayerLaser.cpp">
+      <Filter>Source Files\Game\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\GameObjects\AlienLaser.cpp">
+      <Filter>Source Files\Game\GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

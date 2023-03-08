@@ -9,81 +9,23 @@
 #include <functional>
 #include <thread>
 
+#include <Engine/Mathf/Vector.h>
+#include "Engine\Gameplay\GameObjects\GameObject.h"
+#include <Game/GameObjects/Alien.h>
+#include <Game/GameObjects/PlayerShip.h>
+#include <Engine/Gameplay/World/PlayField.h>
+#include <Engine/Input/Input.h>
+#include <Engine/Input/InputEvent.h>
+
 std::default_random_engine rGen;
 typedef std::uniform_int_distribution<int> intRand;
 typedef std::uniform_real_distribution<float> floatRand;
 
 bool StartGame = false;
 
-class InputEvent {
-
-public:
-	InputEvent() {
-		type = InputEvent::EventType::None;
-	}
-
-	enum EventType
-	{
-		None,
-		Close,
-		KeyPressed
-	};
-
-	EventType type;
-	char key;
-
-	template<typename T>
-	void BindInput(T* ctx, void(T::*callback)(float), float value) {
-		auto call = std::bind(callback, ctx, std::placeholders::_1);
-		call(value);
-	}
-};
-
-class Input
-{
-public:
-	virtual bool Left() = 0;
-	virtual bool Right() = 0;
-	virtual bool Fire() = 0;
-};
-
-class RndInput : public Input
-{
-public:
-	virtual bool Left() { floatRand keyRate(0, 1); return (keyRate(rGen) < 0.3f); }
-	virtual bool Right() { floatRand keyRate(0, 1); return (keyRate(rGen) < 0.4f); };
-	virtual bool Fire() { floatRand keyRate(0, 1); return (keyRate(rGen) < 0.5f); };
-};
-
 class PlayField;
 
-class GameObject
-{
-public:
-	unsigned IDGameObject;
-	char* m_objType = nullptr;
-	Vector2D pos;
-	unsigned char sprite;
-
-	unsigned GetID() { return IDGameObject;  }
-	virtual void Update(PlayField& world) {};
-	bool DecreaseHealth() { return true; };
-
-	std::vector<GameObject*> GetAnyObjects(const std::vector<GameObject*> gameObjects,std::string tag, GameObject& checkObject) {
-		std::vector<GameObject*> allMatchBytag;
-		for (GameObject* go : gameObjects) {
-			if (go != &checkObject) {
-				if (strcmp(go->m_objType, tag.c_str()) == 0) {
-					allMatchBytag.push_back(go);
-				}
-			}
-		}
-		return allMatchBytag;
-	}
-
-};
-
-class PlayField
+/*class PlayField
 {
 private:
 	std::vector<GameObject*> gameObjectsToSpawn;
@@ -118,18 +60,6 @@ public:
 
 	void AddEvent(InputEvent* inputEvent) {
 		poolEvents.push_back(inputEvent);
-	}
-
-	//Remove all pointer in memorie 
-	void RemoveAllGameObject() {
-		for (GameObject* objectToDelete : GameObjectsToDelete()) {
-			if (objectToDelete) {
-				gameObjectsToSpawn.erase(std::find(gameObjectsToSpawn.begin(), gameObjectsToSpawn.end(), objectToDelete)); //Retire l'objet a supprimer
-				delete objectToDelete; //delete le pointer 
-				objectToDelete = nullptr;
-			}
-		} 
-		gameObjectsToDelete.clear();
 	}
 
 	void ClearGame() {
@@ -211,40 +141,9 @@ public:
 		auto it = std::find(gameObjectsToSpawn.begin(), gameObjectsToSpawn.end(), newObj);
 		gameObjectsToDelete.push_back(newObj);
 	}
-};
+};*/
 
-class AlienLaser : public GameObject
-{
-public:
-	AlienLaser() { m_objType = new char[64]; strcpy(m_objType, "AlienLaser"); sprite = RS_AlienLaser; IDGameObject = std::rand(); }
-	~AlienLaser() { delete[] m_objType; }
-
-	void Update(PlayField& world)
-	{
-		
-		bool deleted = false;
-		pos.y += 1.f;
-		if (pos.y > world.bounds.y)
-		{
-			deleted = true;
-		}
-		
-		GameObject* player = world.GetPlayerObject();
-		if (!player) return; //Check si on récupère le personnage
-		if (pos.IntCmp(player->pos))
-		{
-			world.RemoveObject(player);
-			world.DespawnLaser(this); //Remove lorsque le laser a toucher le joueur
-			StartGame = false; //Stop la partie qd le joueur est mort
-		}
-
-		if (deleted)
-		{
-			world.DespawnLaser(this);
-		}
-	}
-};
-
+/*
 class PlayerLaser : public GameObject
 {
 public:
@@ -283,58 +182,10 @@ public:
 			//Remove delete this car le fait au dessus
 		}
 	}
-};
+};*/
 
-class Alien : public GameObject
-{
-public:
-	Alien() { m_objType = new char[64]; strcpy(m_objType, "AlienShip"); sprite = RS_Alien; IDGameObject = std::rand(); }
-	~Alien() { delete[] m_objType; } //delete array
 
-private:
-	float health = 1.f;
-	float energy = 0.f;
-	float direction = 1.f;
-	float velocity = 0.5f;
-
-	bool DecreaseHealth() { health -= 1.f; return health <= 0; }
-
-	void Update(PlayField& world)
-	{
-		pos.x += direction * velocity;
-		// Border check
-		if (pos.x < 0 || pos.x >= world.bounds.x - 1)
-		{
-			direction = -direction;
-			pos.y += 1;
-		}
-
-		// Border check vertical:
-		if (pos.y >= world.bounds.y)
-		{
-			// kill player
-			GameObject* player = world.GetPlayerObject();
-			if (!player) return; //Check si on récupère le personnage
-			if (pos.IntCmp(player->pos))
-			{
-				world.RemoveObject(player);
-				StartGame = false; //Stop la partie qd le joueur est mort
-			}
-			StartGame = false; //Stop la partie qd l'alien sort de l'écran
-		}
-
-		floatRand fireRate(0, 1);
-		if (fireRate(rGen) < 0.2 && world.AlienLasers > 0)
-		{
-			//Spawn laser
-			GameObject* newLaser = new AlienLaser(); //Change reference to pointer
-			newLaser->pos = pos;
-			world.SpawnLaser(newLaser);
-		}
-	}
-};
-
-class PlayerShip : public GameObject
+/*class PlayerShip : public GameObject
 {
 public:
 	PlayerShip() { m_objType = new char[64]; strcpy(m_objType, "PlayerShip"); sprite = RS_Player; IDGameObject = std::rand(); }
@@ -383,7 +234,7 @@ public:
 	void Move(float axisValue) {
 		pos.x += axisValue;
 	}
-};
+};*/
 
 int main()
 {
@@ -399,15 +250,16 @@ int main()
 	// Populate aliens
 	for (int k = 0; k < 20; k++)
 	{
-		Alien* a = new Alien(); //Change reference to pointer
-		a->pos.x = (float)xCoord(rGen);
-		a->pos.y = (float)yCoord(rGen); //Change a->pos.x to a->pos.y
+		Alien* a = new Alien("AlienShip"); //Change reference to pointer
+		a->SetPos((float)xCoord(rGen), (float)yCoord(rGen));
+		a->SetSprite(RaiderSprites::RS_Alien);
 		world.AddObject(a);
 	}
 
 	// Add player
-	PlayerShip* p = new PlayerShip;
-	p->pos = Vector2D(40, 27);
+	PlayerShip* p = new PlayerShip("PlayerShip");
+	p->SetPos(40, 27);
+	p->SetSprite(RaiderSprites::RS_Player);
 	world.AddObject(p);
 
 	StartGame = true; //Add variable pour lancer la boucle de jeu
@@ -419,10 +271,10 @@ int main()
 		InputEvent Event;
 		while (world.PollEvent(Event))
 		{
-			if (Event.type == InputEvent::Close)
+			if (Event.Type == InputEvent::Close)
 				StartGame = false;
 
-			if (Event.type == InputEvent::KeyPressed) {
+			if (Event.Type == InputEvent::KeyPressed) {
 				std::cout << " Key pressed" << "\n";
 			}
 		}
@@ -430,7 +282,7 @@ int main()
 		RenderItemList rl;
 		for (auto it : world.GameObjects())
 		{
-			RenderItem a = RenderItem(Vector2D(it->pos), it->sprite);
+			RenderItem a = RenderItem(Vector2D(it->GetPos()), it->GetSprite());
 			rl.push_back(a);
 		}
 
